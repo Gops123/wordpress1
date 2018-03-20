@@ -1,0 +1,9 @@
+---
+  - name: install all
+    hosts: wordpress
+    become: true
+    roles:
+     - php
+     - nginx
+     - axelitus.mysql
+     - wordpress

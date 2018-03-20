@@ -1,0 +1,9 @@
+---
+# defaults file for mys
+mysql_root_password: "root"
+mysql_packages:
+  - mysql-server
+  - mysql-client-5.7
+  - python-mysqldb
+mysql_secure: yes  
+      

@@ -1,0 +1,37 @@
+--- 
+  - name: Configure MySQL installation
+    become: yes
+    shell: "{{ item }}"
+    with_items:
+      - "echo 'mysql-server mysql-server/root_password password {{ mysql_root_password }}' | debconf-set-selections"
+      - "echo 'mysql-server mysql-server/root_password_again password {{ mysql_root_password }}' | debconf-set-selections"
+    when: ansible_distribution == 'Ubuntu'
+    register: mysql_configure_installation
+
+  - name: Install MySQL
+    apt:
+      name: "{{ item }}"
+      state: latest
+    with_items: "{{ mysql_packages }}"
+    when: mysql_configure_installation|succeeded
+    register: mysql_install
+
+  - name: Configure MySQL root account
+    mysql_user:
+      login_user: "root"
+      login_host: ""
+      login_password: "{{ mysql_root_password }}"
+      name: "root"
+      host: "{{ item }}"
+      password: "{{ mysql_root_password }}"
+      update_password: "always"
+      priv: "*.*:ALL,GRANT"
+      state: "present"
+    with_items:
+      - "%"
+      - "127.0.0.1"
+      - "::1"
+      - "localhost"
+    when: mysql_install|succeeded
+    notify:
+      - Restart MySQL service

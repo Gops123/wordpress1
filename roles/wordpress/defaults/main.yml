@@ -1,0 +1,12 @@
+---
+# defaults file for wordpress
+wp_url: 'https://wordpress.org/latest.tar.gz'
+wp_dbname: 'wordpress'
+wp_user: 'root'
+wp_pass: 'r00t'
+wp_host: 'localhost'
+wp_dbchar: 'utf8'
+wp_fs_method: 'direct'
+
+  
+      

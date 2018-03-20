@@ -1,0 +1,68 @@
+---
+# tasks file for wordpress  
+
+  - name: Download wordpress
+    become: yes
+    get_url:
+      url: "{{wp_url}}"
+      dest: /tmp
+      force: yes
+      validate_certs: no
+     
+  - name: extract wordpress
+    become: yes
+    unarchive:
+      copy: no
+      src: /tmp/wordpress-4.9.4.tar.gz
+      dest: /tmp
+  
+  - name: copy
+    shell: cp /tmp/wordpress/wp-config-sample.php /tmp/wordpress/wp-config.php
+
+  - name: file
+    shell: cp -a /tmp/wordpress/. /var/www/html
+   
+     
+   
+  - name: Creates directory
+    file: 
+      path: /var/www/html/.htaccess 
+      mode: 660 
+      state: directory
+            
+  - name: Creates directory
+    file: 
+      path: /var/www/html/wp-content/upgrade 
+     # mode: 660 
+      state: directory
+  
+  - template:
+      src: wp-config.php.j2
+      dest: /var/www/html/wp-config.php
+
+  - name: change mode
+    file: 
+      path: /var/www/html/wp-content/themes 
+      mode: g=w 
+      recurse: yes
+
+  - file: 
+      path: /var/www/html/wp-content/plugins 
+      mode: g=w 
+      recurse: yes
+    
+  - name: copy
+    shell: curl -s https://api.wordpress.org/secret-key/1.1/salt/
+    register: op
+
+  - name: write
+    become: yes
+    lineinfile:
+      path: /home/ubuntu/demo
+      line: "{{op}}"
+
+      
+
+ 
+
+    
